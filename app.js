@@ -1,7 +1,8 @@
 const LOCATION = "New York, NY";
 const ID = 5128581;
-const URL = `api.openweathermap.org/data/2.5/weather?id=${ID}&APPID=${APPID}`;
-let celcius = 7;
+const APPID = config.APPID;
+const API_URL = `http://api.openweathermap.org/data/2.5/weather?id=${ID}&APPID=${APPID}&units=metric`;
+let celcius;
 
 // Current Date
 const getCurrentDate = () => {
@@ -21,21 +22,13 @@ const updateDate = () => {
   date.innerHTML = getCurrentDate();
 };
 
-updateDate();
-
 // Current Location
 const updateLocation = () => {
   const loc = document.querySelector("#current-place");
   loc.innerHTML = LOCATION;
 };
 
-updateLocation();
-
 // Convert Between Celcius and Fahrenheit
-const toCelcius = faren => {
-  return (faren - 32) * (5 / 9);
-};
-
 const toFahrenheit = cel => {
   return (9 / 5) * cel + 32;
 };
@@ -43,7 +36,7 @@ const toFahrenheit = cel => {
 const getConversionTable = cel => {
   return {
     C: cel,
-    F: parseInt(toFahrenheit(cel))
+    F: Math.round(toFahrenheit(cel))
   };
 };
 
@@ -74,5 +67,61 @@ const convertTemp = () => {
 const temp = document.querySelector(".temperature");
 temp.addEventListener("change", convertTemp);
 
-// Animations
-const animation = document.querySelector(".animation");
+// Get json data from open-weather API
+const getJSONData = async url => {
+  let res = await fetch(url);
+  let data = await res.json();
+  return data;
+};
+
+// Get main description and temperature from the json data
+const getMainAndTemp = json => {
+  let main = json.weather[0].main;
+  let temp = json.main.temp;
+
+  return {
+    main: main,
+    temp: temp
+  };
+};
+
+const updateWeatherInfo = async url => {
+  const weatherType = document.getElementById("main");
+  const temp = document.getElementById("temp");
+  const animation = document.querySelector(".animation");
+
+  // Updating date and location
+  updateDate();
+  updateLocation();
+
+  // Fetching the data
+  try {
+    const weatherJSON = await getJSONData(url);
+    const weatherData = getMainAndTemp(weatherJSON);
+
+    let main = weatherData.main;
+    let temperature = weatherData.temp;
+
+    // Updating the DOM
+    weatherType.innerHTML = descriptions[main];
+    animation.innerHTML = WEATHER[main];
+    celcius = Math.round(temperature);
+    temp.innerHTML = `${celcius}&#176;C`;
+
+    const degree = document.getElementById("degree");
+    degree.setAttribute("data-degree", "C");
+    degree.checked = false;
+
+    console.log(weatherJSON);
+  } catch (err) {
+    console.error(err);
+    console.log("Server down");
+  }
+
+  // Updating the weather info again after an hour
+  setTimeout(() => {
+    updateWeatherInfo(url);
+  }, 3600000);
+};
+
+updateWeatherInfo(API_URL);
