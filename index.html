@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="animations.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="animations.js" defer></script>
+    <script src="app.js" defer></script>
+    <title>Weather App</title>
+  </head>
+  <body>
+    <div id="bg-image"></div>
+
+    <div class="weather">
+      <div class="weather-container">
+        <div class="animation"></div>
+        <div class="info">
+          <div class="date"><h2 id="today">12/22/19</h2></div>
+          <div class="location"><h1 id="current-place">New York, NY</h1></div>
+          <div class="weather-type">
+            <h3>Sunny</h3>
+          </div>
+          <label class="temperature">
+            <input
+              type="checkbox"
+              name="temperature"
+              id="degree"
+              data-degree="C"
+            />
+            <h4 id="temp">7&#176;C</h4>
+          </label>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
